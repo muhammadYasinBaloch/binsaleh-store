@@ -1,8 +1,19 @@
-# netlify.toml — BIN SALEH Store Frontend
+# netlify.toml — BIN SALEH Store
 # https://docs.netlify.com/configure-builds/file-based-configuration/
 
 [build]
   publish = "binsaleh-frontend"  # All static HTML/CSS/JS files are here
+  functions = "binsaleh-frontend/netlify/functions"  # Netlify Functions directory
 
-# No redirect rules needed — this is a multi-page static site with real .html files
-# Netlify serves the correct file automatically for each URL
+# Route ALL /api/* requests to the Netlify Function
+# This replaces the need for a separate backend server (Render, Railway, etc.)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+# Single-page app fallback — serve index.html for unknown routes (optional)
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200

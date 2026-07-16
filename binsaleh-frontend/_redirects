@@ -1,5 +1,5 @@
 # Netlify Redirects
 # Netlify auto-enables HTTPS — no force redirect needed
 
-# API proxy — routes /api/* requests to Render backend, avoiding CORS entirely
-/api/*  https://binsaleh-api.onrender.com/api/:splat  200
+# API routes are handled by Netlify Functions (see netlify.toml)
+# No additional redirects needed for API — netlify.toml handles it
