@@ -31,7 +31,9 @@ const API_BASE = (function() {
   }
   
   // Production (Netlify, custom domain, etc.)
-  return 'https://binsaleh-api.onrender.com/api';
+  // Use relative path — Netlify proxies /api/* to Render via _redirects file
+  // This avoids CORS entirely since requests go to the same origin
+  return '/api';
 })();
 
 /* -----------------------------------------------------------------
