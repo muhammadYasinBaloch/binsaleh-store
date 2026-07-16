@@ -385,7 +385,7 @@ tr:hover td{background:rgba(255,255,255,0.02);}
       <div class="form-group">
         <label>Admin Setup Key</label>
         <input type="password" id="reg-key" placeholder="Enter the admin setup key"/>
-        <p style="font-size:0.68rem;color:var(--muted);margin-top:6px">Use the JWT_SECRET from your .env file</p>
+        <p style="font-size:0.68rem;color:var(--muted);margin-top:6px">Requires ADMIN_SETUP_KEY or JWT_SECRET from your .env</p>
       </div>
       <button class="login-btn" onclick="doRegister()"><i class="fas fa-user-plus" style="margin-right:8px"></i>Register as Admin</button>
     </div>
@@ -1615,7 +1615,15 @@ async function doLogin() {
     toast(err.message, 'error');
   }
 }
-document.addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter') return;
+  const regForm = document.getElementById('auth-register');
+  if(regForm && regForm.style.display !== 'none') {
+    doRegister();
+  } else {
+    doLogin();
+  }
+});
 
 // Agar valid admin token pehle se saved hai (browser refresh ke baad),
 // to dobara login form dikhane ki zarurat nahi
