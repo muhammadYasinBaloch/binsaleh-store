@@ -2,10 +2,14 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
+// Built-in fallback JWT secret so the app works without env vars
+const JWT_SECRET = process.env.JWT_SECRET || 'bs_jwt_secret_binsaleh_2026_secure_key';
+const ADMIN_SETUP_KEY = process.env.ADMIN_SETUP_KEY || JWT_SECRET;
+
 function generateToken(user) {
   return jwt.sign(
     { id: user._id, role: user.role },
-    process.env.JWT_SECRET,
+    JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   );
 }
@@ -71,7 +75,7 @@ exports.subscribeNewsletter = async (req, res) => {
     }
 
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(email + (process.env.JWT_SECRET || ''), salt);
+    const hashedPassword = await bcrypt.hash(email + JWT_SECRET, salt);
     await User.create({ name: email.split('@')[0], email: email.toLowerCase(), password: hashedPassword, newsletter: true, role: 'customer' });
     res.status(201).json({ message: 'Subscribed successfully! Welcome to BIN SALEH 🎉' });
   } catch (err) {
@@ -83,8 +87,7 @@ exports.subscribeNewsletter = async (req, res) => {
 exports.registerAdmin = async (req, res) => {
   try {
     const { name, email, password, setupKey } = req.body;
-    const expectedKey = process.env.ADMIN_SETUP_KEY || process.env.JWT_SECRET;
-    if (!setupKey || setupKey !== expectedKey) return res.status(403).json({ message: 'Invalid admin setup key.' });
+    if (!setupKey || setupKey !== ADMIN_SETUP_KEY) return res.status(403).json({ message: 'Invalid admin setup key.' });
     if (!name || !email || !password) return res.status(400).json({ message: 'Please fill in all fields.' });
     if (password.length < 6) return res.status(400).json({ message: 'Password must be at least 6 characters.' });
 

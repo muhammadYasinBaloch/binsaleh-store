@@ -4,11 +4,15 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
+// Built-in fallback JWT secret so the app works without env vars
+const JWT_SECRET = process.env.JWT_SECRET || 'bs_jwt_secret_binsaleh_2026_secure_key';
+const ADMIN_SETUP_KEY = process.env.ADMIN_SETUP_KEY || JWT_SECRET;
+
 // JWT token banane ka helper
 function generateToken(user) {
   return jwt.sign(
     { id: user._id, role: user.role },
-    process.env.JWT_SECRET,
+    JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   );
 }
@@ -126,7 +130,7 @@ exports.subscribeNewsletter = async (req, res) => {
 
     // Create a minimal user entry for newsletter only
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(email + process.env.JWT_SECRET, salt);
+    const hashedPassword = await bcrypt.hash(email + JWT_SECRET, salt);
 
     await User.create({
       name: email.split('@')[0],
@@ -152,9 +156,7 @@ exports.registerAdmin = async (req, res) => {
   try {
     const { name, email, password, setupKey } = req.body;
 
-    // Verify setup key
-    const expectedKey = process.env.ADMIN_SETUP_KEY || process.env.JWT_SECRET;
-    if (!setupKey || setupKey !== expectedKey) {
+    if (!setupKey || setupKey !== ADMIN_SETUP_KEY) {
       return res.status(403).json({ message: 'Invalid admin setup key.' });
     }
 
