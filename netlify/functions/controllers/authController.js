@@ -2,9 +2,10 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
-// Built-in fallback JWT secret so the app works without env vars
+// Built-in fallback secrets so the app works without env vars
+// In production, set these as Netlify Environment Variables to override
 const JWT_SECRET = process.env.JWT_SECRET || 'bs_jwt_secret_binsaleh_2026_secure_key';
-const ADMIN_SETUP_KEY = process.env.ADMIN_SETUP_KEY || JWT_SECRET;
+const ADMIN_SETUP_KEY = process.env.ADMIN_SETUP_KEY || 'Binsaleh_products_services';
 
 function generateToken(user) {
   return jwt.sign(
